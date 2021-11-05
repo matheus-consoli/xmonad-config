@@ -326,7 +326,7 @@ myScratchpads =
   where
     getSpotify     = className =? "Spotify"
     getTelegram    = className =? "TelegramDesktop"
-    getDiscord     = className =? "Discord"
+    getDiscord     = className =? "discord"
     resizeSpotify  = customFloating $ W.RationalRect 0.05 0.05 0.90 0.90 -- ? ? width height
     resizeTelegram = customFloating $ W.RationalRect 0.05 0.05 0.90 0.90
     resizeDiscord  = customFloating $ W.RationalRect 0.05 0.05 0.90 0.90
