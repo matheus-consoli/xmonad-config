@@ -5,7 +5,6 @@ import XMonad
 import XMonad.Actions.CopyWindow
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.EwmhDesktops
-import XMonad.Hooks.ManageDocks
 import XMonad.Layout.Grid
 import XMonad.Layout.NoBorders
 import XMonad.Layout.ResizableTile
@@ -196,13 +195,6 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) =
       ( (modm, xK_period),
         sendMessage (IncMasterN (-1))
       ),
-      -- Toggle the status bar gap
-      -- Use this binding with avoidStruts from Hooks.ManageDocks.
-      -- See also the statusBar function from Hooks.DynamicLog.
-      --
-      ( (modm, xK_b),
-        sendMessage ToggleStruts
-      ),
       -- Quit xmonad
       ( (modm .|. shiftMask, xK_q),
         io (exitWith ExitSuccess)
@@ -264,10 +256,7 @@ myMouseBindings (XConfig {XMonad.modMask = modm}) =
 -- The available layouts.  Note that each layout is separated by |||,
 -- which denotes layout choice.
 --
--- myLayout :: ModifiedLayout AvoidStruts (Choose Tall (Choose (Mirror Tall) Full)) a
-myLayout =
-  avoidStruts $
-    smartBorders $ smartSpacing 1 $ (tiled ||| Mirror tiled ||| Grid ||| spiral (6 / 7) ||| noBorders Full)
+myLayout = smartBorders $ smartSpacing 1 $ (tiled ||| Mirror tiled ||| Grid ||| spiral (6 / 7) ||| noBorders Full)
   where
     -- default tiling algorithm partitions the screen into two panes
     tiled = ResizableTall nmaster delta ratio []
@@ -366,36 +355,28 @@ myStartupHook = do
 
 ------------------------------------------------------------------------
 -- Now run xmonad with all the defaults we set up.
-
 -- Run xmonad with the settings you specify. No need to modify this.
 --
 main :: IO ()
-main = do
-  xmonad $ ewmh $ ewmhFullscreen $ docks $ defaults
-
--- A structure containing your configuration settings, overriding
--- fields in the default config. Any you don't override, will
--- use the defaults defined in xmonad/XMonad/Config.hs
---
--- No need to modify this.
---
--- defaults :: XConfig (ModifiedLayout AvoidStruts (Choose Tall (Choose (Mirror Tall) Full)))
-defaults =
-  def
-    { -- simple stuff
-      terminal = myTerminal,
-      focusFollowsMouse = myFocusFollowsMouse,
-      clickJustFocuses = myClickJustFocuses,
-      borderWidth = myBorderWidth,
-      modMask = myModMask,
-      workspaces = myWorkspaces,
-      normalBorderColor = myNormalBorderColor,
-      focusedBorderColor = myFocusedBorderColor,
-      -- key bindings
-      keys = myKeys,
-      mouseBindings = myMouseBindings,
-      -- hooks, layouts
-      layoutHook = myLayout,
-      manageHook = myManageHook,
-      handleEventHook = myEventHook
-    }
+main =
+  xmonad $
+    ewmhFullscreen $
+      ewmh $
+        def
+          { -- simple stuff
+            terminal = myTerminal,
+            focusFollowsMouse = myFocusFollowsMouse,
+            clickJustFocuses = myClickJustFocuses,
+            borderWidth = myBorderWidth,
+            modMask = myModMask,
+            workspaces = myWorkspaces,
+            normalBorderColor = myNormalBorderColor,
+            focusedBorderColor = myFocusedBorderColor,
+            -- key bindings
+            keys = myKeys,
+            mouseBindings = myMouseBindings,
+            -- hooks, layouts
+            layoutHook = myLayout,
+            manageHook = myManageHook,
+            handleEventHook = myEventHook
+          }
