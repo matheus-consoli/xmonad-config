@@ -87,6 +87,10 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) =
       ( (modm, xK_w),
         spawn "rofi -show-icons -show window"
       ),
+      -- launch window selector
+      ( (modm, xK_c),
+        spawn "rofi -show calc -modi calc -no-show-match -no-sort -no-persistent-history"
+      ),
       -- close focused window
       ( (modm .|. shiftMask, xK_c),
         kill
