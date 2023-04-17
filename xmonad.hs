@@ -9,7 +9,9 @@ import XMonad.Layout.Grid
 import XMonad.Layout.NoBorders
 import XMonad.Layout.ResizableTile
 import XMonad.Layout.Spacing
+import XMonad.Layout.ThreeColumns
 import XMonad.Layout.Spiral
+import XMonad.Layout.ShowWName
 import qualified XMonad.StackSet as W
 import XMonad.Util.NamedScratchpad
 import XMonad.Util.Run
@@ -32,7 +34,7 @@ myClickJustFocuses = False
 -- Width of the window border in pixels.
 --
 myBorderWidth :: Dimension
-myBorderWidth = 4
+myBorderWidth = 6
 
 -- modMask lets you specify which modkey you want to use. The default
 -- is mod1Mask ("left alt").  You may also consider using mod3Mask
@@ -56,11 +58,20 @@ myWorkspaces = [" 1 ", " 2 ", " 3 ", " 4 ", " 5 ", " 6 ", " 7 ", " 8 ", " 9 "]
 
 -- Border colors for unfocused and focused windows, respectively.
 --
+--- my colors -------------------
+-- myNormalBorderColor :: [Char]
+-- myNormalBorderColor = "#060611"
+
+-- myFocusedBorderColor :: [Char]
+-- myFocusedBorderColor = "#453a62" -- "#3257AF"
+----------------------------------
+
+-- catppuccin macchiato inspired
 myNormalBorderColor :: [Char]
-myNormalBorderColor = "#060611"
+myNormalBorderColor = "#181926"
 
 myFocusedBorderColor :: [Char]
-myFocusedBorderColor = "#453a62" -- "#3257AF"
+myFocusedBorderColor = "#8bd5ca"
 
 toggleWindowInAllWorkspaces = do
   copies <- wsContainingCopies
@@ -260,7 +271,7 @@ myMouseBindings (XConfig {XMonad.modMask = modm}) =
 -- The available layouts.  Note that each layout is separated by |||,
 -- which denotes layout choice.
 --
-myLayout = smartBorders $ smartSpacing 1 $ (tiled ||| Mirror tiled ||| Grid ||| spiral (6 / 7) ||| noBorders Full)
+myLayout = smartBorders $ smartSpacingWithEdge 5 $ (tiled ||| Mirror tiled ||| threeColumns ||| Grid ||| spiral (6 / 7) ||| noBorders Full)
   where
     -- default tiling algorithm partitions the screen into two panes
     tiled = ResizableTall nmaster delta ratio []
@@ -274,20 +285,30 @@ myLayout = smartBorders $ smartSpacing 1 $ (tiled ||| Mirror tiled ||| Grid ||| 
     -- Percent of screen to increment by when resizing panes
     delta = 3 / 100
 
+    -- three columns
+    threeColumns = ThreeCol 1 (3/100) (1/3)
+
+
+myShowWNameConf :: SWNConfig
+myShowWNameConf =
+  def
+    { swn_font = "xft:BlexMono Nerd Font:bold:size=20"
+    , swn_fade = 0.5
+    , swn_bgcolor = "#1e2030"
+    , swn_color = "#5b6078"
+    }
+
+
 ------------------------------------------------------------------------
 -- My ScratchPads
 myScratchpads =
-  [ NS "spotify" "spotify" getSpotify defaultSize,
-    NS "telegram" "telegram-desktop" getTelegram defaultSize,
-    NS "discord" "discord" getDiscord defaultSize,
-    NS "zulip" "zulip" getZulip defaultSize
-    -- , NS "spotify" "alacritty --class scratchpad --title spotify  -e spt" getSpotifyTerm resizeTerm
+  [ NS "spotify" "spotify" (getClassName "Spotify") defaultSize
+  , NS "telegram" "telegram-desktop" (getClassName "TelegramDesktop") defaultSize
+  , NS "discord" "discord" (getClassName "discord") defaultSize
+  , NS "zulip" "zulip" (getClassName "zulip") defaultSize
   ]
   where
-    getSpotify = className =? "Spotify"
-    getTelegram = className =? "TelegramDesktop"
-    getDiscord = className =? "discord"
-    getZulip = className =? "zulip"
+    getClassName app = className =? app
     defaultSize = customFloating $ W.RationalRect 0.05 0.05 0.90 0.90
 
 ------------------------------------------------------------------------
@@ -329,35 +350,6 @@ myManageHook =
 myEventHook = handleEventHook def -- <+> ewmhFullscreen
 
 ------------------------------------------------------------------------
--- Status bars and logging
-
--- Perform an arbitrary action on each internal state change or X event.
--- See the 'XMonad.Hooks.DynamicLog' extension for examples.
---
--- myLogHook :: X ()
--- myLogHook myBar = dynamicLogWithPP $ def
---   { ppOutput          = hPutStrLn myBar
---   , ppCurrent         = xmobarColor "#060611" "#453a62"         -- Current workspace in xmobar
---   , ppVisible         = xmobarColor "#453a62" ""                -- Visible but not current workspace
---   , ppHidden          = xmobarColor "#3257AF" ""                 -- Hidden workspaces in xmobar
---   , ppHiddenNoWindows = xmobarColor "#453a62" ""        -- Hidden workspaces (no windows)
---   , ppUrgent          = xmobarColor "#c70d3a" ""                 -- Urgent workspace
---   , ppOrder           = \(ws : _ : _ : _) -> [ws]
---   }
-
-------------------------------------------------------------------------
--- Startup hook
-
--- Perform an arbitrary action each time xmonad starts or is restarted
--- with mod-q.  Used by, e.g., XMonad.Layout.PerWorkspace to initialize
--- per-workspace layout choices.
---
--- By default, do nothing.
-myStartupHook :: X ()
-myStartupHook = do
-  spawn "$HOME/.xmonad/scripts/autostart.sh"
-
-------------------------------------------------------------------------
 -- Now run xmonad with all the defaults we set up.
 -- Run xmonad with the settings you specify. No need to modify this.
 --
@@ -380,7 +372,7 @@ main =
             keys = myKeys,
             mouseBindings = myMouseBindings,
             -- hooks, layouts
-            layoutHook = myLayout,
+            layoutHook = showWName' myShowWNameConf myLayout,
             manageHook = myManageHook,
             handleEventHook = myEventHook
           }
