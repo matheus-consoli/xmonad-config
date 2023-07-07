@@ -86,8 +86,13 @@ toggleWindowInAllWorkspaces = do
 myKeys :: XConfig Layout -> M.Map (KeyMask, KeySym) (X ())
 myKeys conf@(XConfig {XMonad.modMask = modm}) =
   M.fromList $
-    -- launch a terminal
-    [ ( (modm .|. shiftMask, xK_Return),
+    [
+      -- launch my emacs terminal
+      ( (modm .|. shiftMask, xK_Return),
+        spawn "emacsclient -c -eval '(progn (switch-to-buffer \"terminal\") (multi-term-next))'"
+      ),
+      -- launch a new terminal
+      ( (modm .|. mod1Mask, xK_Return),
         spawn myTerminal
       ),
       -- launch dmenu
