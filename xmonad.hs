@@ -63,15 +63,23 @@ myWorkspaces = [" 1 ", " 2 ", " 3 ", " 4 ", " 5 ", " 6 ", " 7 ", " 8 ", " 9 "]
 -- myNormalBorderColor = "#060611"
 
 -- myFocusedBorderColor :: [Char]
--- myFocusedBorderColor = "#453a62" -- "#3257AF"
+-- myFocusedBorderColor = "#453a62"
 ----------------------------------
 
--- catppuccin macchiato inspired
+-- catppuccin inspired
+-- myNormalBorderColor :: [Char]
+-- myNormalBorderColor = "#181926"
+
+-- myFocusedBorderColor :: [Char]
+-- myFocusedBorderColor = "#f38ba8"
+
+-- dark academia
 myNormalBorderColor :: [Char]
-myNormalBorderColor = "#181926"
+myNormalBorderColor = "#202430"
 
 myFocusedBorderColor :: [Char]
-myFocusedBorderColor = "#8bd5ca"
+myFocusedBorderColor = "#43473e"
+
 
 toggleWindowInAllWorkspaces = do
   copies <- wsContainingCopies
@@ -142,6 +150,10 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) =
       -- launch scratchpad with zulip
       ( (modm .|. shiftMask, xK_z),
         namedScratchpadAction myScratchpads "zulip"
+      ),
+      -- launch scratchpad with slack
+      ( (modm .|. shiftMask, xK_f),
+        namedScratchpadAction myScratchpads "slack"
       ),
       -- Rotate through the available layout algorithms
       ( (modm, xK_space),
@@ -276,7 +288,7 @@ myMouseBindings (XConfig {XMonad.modMask = modm}) =
 -- The available layouts.  Note that each layout is separated by |||,
 -- which denotes layout choice.
 --
-myLayout = smartBorders $ smartSpacingWithEdge 5 $ (tiled ||| Mirror tiled ||| threeColumns ||| Grid ||| spiral (6 / 7) ||| noBorders Full)
+myLayout = smartBorders $ smartSpacingWithEdge 3 $ (tiled ||| Mirror tiled ||| threeColumns ||| Grid ||| spiral (6 / 7) ||| noBorders Full)
   where
     -- default tiling algorithm partitions the screen into two panes
     tiled = ResizableTall nmaster delta ratio []
@@ -297,7 +309,7 @@ myLayout = smartBorders $ smartSpacingWithEdge 5 $ (tiled ||| Mirror tiled ||| t
 myShowWNameConf :: SWNConfig
 myShowWNameConf =
   def
-    { swn_font = "xft:BlexMono Nerd Font:bold:size=20"
+    { swn_font = "xft:Comfortaa:bold:size=20"
     , swn_fade = 0.5
     , swn_bgcolor = "#1e2030"
     , swn_color = "#5b6078"
@@ -311,6 +323,7 @@ myScratchpads =
   , NS "telegram" "telegram-desktop" (getClassName "TelegramDesktop") defaultSize
   , NS "discord" "discord" (getClassName "discord") defaultSize
   , NS "zulip" "zulip" (getClassName "zulip") defaultSize
+  , NS "slack" "slack" (getClassName "Slack") defaultSize
   ]
   where
     getClassName app = className =? app
