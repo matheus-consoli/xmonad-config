@@ -37,7 +37,7 @@ myBorderWidth :: Dimension
 myBorderWidth = 6
 
 -- modMask lets you specify which modkey you want to use. The default
--- is mod1Mask ("left alt").  You may also consider using mod3Mask
+-- is mod1Mask ("left alt"). You may also consider using mod3Mask
 -- ("right alt"), which does not conflict with emacs keybindings. The
 -- "windows key" is usually mod4Mask.
 --
@@ -135,11 +135,11 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) =
       ( (modm .|. controlMask, xK_i),
         spawn "xcolor -s clipboard"
       ),
-      -- lauch scratchpad with telegram
+      -- launch scratchpad with telegram
       ( (modm .|. shiftMask, xK_t),
         namedScratchpadAction myScratchpads "telegram"
       ),
-      -- lauch scratchpad with spotify
+      -- launch scratchpad with spotify
       ( (modm .|. shiftMask, xK_s),
         namedScratchpadAction myScratchpads "spotify"
       ),
@@ -159,7 +159,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) =
       ( (modm, xK_space),
         sendMessage NextLayout
       ),
-      --  Reset the layouts on the current workspace to default
+      -- Reset the layouts on the current workspace to default
       ( (modm .|. shiftMask, xK_space),
         setLayout $ XMonad.layoutHook conf
       ),
@@ -248,8 +248,8 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) =
 
 -- ++
 --
--- mod-{w,e,r}, Switch to physical/Xinerama screens 1, 2, or 3
--- mod-shift-{w,e,r}, Move client to screen 1, 2, or 3
+-- mod-{w,e,r}, Switch to physical/Xinerama screens 1, 2 or 3
+-- mod-shift-{w,e,r}, Move client to screen 1, 2 or 3
 --
 --    [ ((m .|. modm, key), screenWorkspace sc >>= flip whenJust (windows . f))
 --   | (key, sc) <- zip [xK_w, xK_e, xK_r] [0 ..]
@@ -285,7 +285,7 @@ myMouseBindings (XConfig {XMonad.modMask = modm}) =
 -- restarting (with 'mod-q') to reset your layout state to the new
 -- defaults, as xmonad preserves your old layout settings by default.
 --
--- The available layouts.  Note that each layout is separated by |||,
+-- The available layouts. Note that each layout is separated by |||,
 -- which denotes layout choice.
 --
 myLayout = smartBorders $ smartSpacingWithEdge 3 $ (tiled ||| Mirror tiled ||| threeColumns ||| Grid ||| spiral (6 / 7) ||| noBorders Full)
