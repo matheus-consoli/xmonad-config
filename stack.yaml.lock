@@ -3,11 +3,54 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages: []
-snapshots:
+packages:
 - completed:
-    size: 586069
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/18/14.yaml
-    sha256: 87842ecbaa8ca9cee59a7e6be52369dbed82ed075cb4e0d152614a627e8fd488
+    hackage: X11-xft-0.3.4@sha256:e08bd69d24c40f1a33e6c87964f200656da77ad6a1fbdf6a4073dcb967e65599,1380
+    pantry-tree:
+      sha256: 0dad74fea9135433d0f4ca7a65dba6c8ac99136bb6cacf901d2ddf795846d0f1
+      size: 330
   original:
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/18/14.yaml
+    hackage: X11-xft-0.3.4@sha256:e08bd69d24c40f1a33e6c87964f200656da77ad6a1fbdf6a4073dcb967e65599,1380
+- completed:
+    hackage: data-default-class-0.1.2.0@sha256:63e62120b7efd733a5a17cf59ceb43268e9a929c748127172d7d42f4a336e327,542
+    pantry-tree:
+      sha256: 5017630b11698aefa65fc61cab84a257ce97833c968d425e1b2d53d6c3b5c096
+      size: 224
+  original:
+    hackage: data-default-class-0.1.2.0@sha256:63e62120b7efd733a5a17cf59ceb43268e9a929c748127172d7d42f4a336e327,542
+- completed:
+    hackage: random-1.2.1.2@sha256:32397de181e20ccaacf806ec70de9308cf044f089a2be37c936f3f8967bde867,6460
+    pantry-tree:
+      sha256: cd0fe2b39e4d4efad4d78f69c28b7fd49ffe2879923b3a9272352edc43a956e6
+      size: 1528
+  original:
+    hackage: random-1.2.1.2@sha256:32397de181e20ccaacf806ec70de9308cf044f089a2be37c936f3f8967bde867,6460
+- completed:
+    hackage: setlocale-1.0.0.10@sha256:9690b5b6b111833c44c102ffd06feb2724f7fe7baf97c604062f2261331df952,869
+    pantry-tree:
+      sha256: 39fdb11fea4c6f8d8cb87641ce88b0a8ea2572e7b896588d3a63c9d71e4eb159
+      size: 220
+  original:
+    hackage: setlocale-1.0.0.10@sha256:9690b5b6b111833c44c102ffd06feb2724f7fe7baf97c604062f2261331df952,869
+- completed:
+    hackage: utf8-string-1.0.2@sha256:79416292186feeaf1f60e49ac5a1ffae9bf1b120e040a74bf0e81ca7f1d31d3f,1538
+    pantry-tree:
+      sha256: 0863c3c9b6ee24dd38873c62e38ac46dd50aff2ea6b362beadf7f9b4a273c75f
+      size: 601
+  original:
+    hackage: utf8-string-1.0.2@sha256:79416292186feeaf1f60e49ac5a1ffae9bf1b120e040a74bf0e81ca7f1d31d3f,1538
+- completed:
+    hackage: X11-1.10.3@sha256:e0b9a48aab0a963a4b5015287fe3aaf93181697931770a2c8477befe88a9e775,3759
+    pantry-tree:
+      sha256: 2e0fb5c5f856ed823a359ca92a0f32f7e24cc1f07576f5e63776820a334cd22c
+      size: 2861
+  original:
+    hackage: X11-1.10.3@sha256:e0b9a48aab0a963a4b5015287fe3aaf93181697931770a2c8477befe88a9e775,3759
+- completed:
+    hackage: splitmix-0.1.0.5@sha256:caa9b4a92abf1496c7f6a3c0f4e357426a54880077cb9f04e260a8bfa034b77b,6596
+    pantry-tree:
+      sha256: 6eb34b55fb0eb1c41fe539fb8ece181e31e82f4c89abf2b1aaf46df4b274797d
+      size: 1519
+  original:
+    hackage: splitmix-0.1.0.5@sha256:caa9b4a92abf1496c7f6a3c0f4e357426a54880077cb9f04e260a8bfa034b77b,6596
+snapshots: []

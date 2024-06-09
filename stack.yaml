@@ -17,8 +17,8 @@
 #
 # resolver: ./custom-snapshot.yaml
 # resolver: https://example.com/snapshots/2018-01-01.yaml
-resolver:
-  url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/18/14.yaml
+resolver: ghc-9.8.2 # lts-21.12
+  # url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/18/14.yaml
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
@@ -41,7 +41,14 @@ packages:
 # - git: https://github.com/commercialhaskell/stack.git
 #   commit: e7b331f14bcffb8367cd58fbfc8b40ec7642100a
 #
-# extra-deps: []
+extra-deps:
+- X11-xft-0.3.4@sha256:e08bd69d24c40f1a33e6c87964f200656da77ad6a1fbdf6a4073dcb967e65599,1380
+- data-default-class-0.1.2.0@sha256:63e62120b7efd733a5a17cf59ceb43268e9a929c748127172d7d42f4a336e327,542
+- random-1.2.1.2@sha256:32397de181e20ccaacf806ec70de9308cf044f089a2be37c936f3f8967bde867,6460
+- setlocale-1.0.0.10@sha256:9690b5b6b111833c44c102ffd06feb2724f7fe7baf97c604062f2261331df952,869
+- utf8-string-1.0.2@sha256:79416292186feeaf1f60e49ac5a1ffae9bf1b120e040a74bf0e81ca7f1d31d3f,1538
+- X11-1.10.3@sha256:e0b9a48aab0a963a4b5015287fe3aaf93181697931770a2c8477befe88a9e775,3759
+- splitmix-0.1.0.5@sha256:caa9b4a92abf1496c7f6a3c0f4e357426a54880077cb9f04e260a8bfa034b77b,6596
 
 # Override default flag values for local packages and extra-deps
 # flags: {}
@@ -50,7 +57,7 @@ packages:
 # extra-package-dbs: []
 
 # Control whether we use the GHC we find on the path
-# system-ghc: true
+system-ghc: true
 #
 # Require a specific version of stack, using version ranges
 # require-stack-version: -any # Default

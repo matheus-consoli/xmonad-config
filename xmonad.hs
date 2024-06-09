@@ -75,11 +75,10 @@ myWorkspaces = [" 1 ", " 2 ", " 3 ", " 4 ", " 5 ", " 6 ", " 7 ", " 8 ", " 9 "]
 
 -- dark academia
 myNormalBorderColor :: [Char]
-myNormalBorderColor = "#202430"
+myNormalBorderColor = "#2e4f6a" -- "#413c38" -- #202430
 
 myFocusedBorderColor :: [Char]
-myFocusedBorderColor = "#43473e"
-
+myFocusedBorderColor = "#ff898f" -- "#d38162" -- "#ada193" -- "#43473e"
 
 toggleWindowInAllWorkspaces = do
   copies <- wsContainingCopies
@@ -94,8 +93,7 @@ toggleWindowInAllWorkspaces = do
 myKeys :: XConfig Layout -> M.Map (KeyMask, KeySym) (X ())
 myKeys conf@(XConfig {XMonad.modMask = modm}) =
   M.fromList $
-    [
-      -- launch my emacs terminal
+    [ -- launch my emacs terminal
       ( (modm .|. shiftMask, xK_Return),
         spawn "emacsclient -c -eval '(progn (switch-to-buffer \"terminal\") (multi-term-next))'"
       ),
@@ -233,7 +231,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) =
       ),
       -- Restart xmonad
       ( (modm, xK_q),
-        spawn "xmonad --recompile; killall xmobar; xmonad --restart"
+        spawn "xmonad --recompile;"
       )
     ]
       ++
@@ -303,31 +301,29 @@ myLayout = smartBorders $ smartSpacingWithEdge 3 $ (tiled ||| Mirror tiled ||| t
     delta = 3 / 100
 
     -- three columns
-    threeColumns = ThreeCol 1 (3/100) (1/3)
-
+    threeColumns = ThreeCol 1 (3 / 100) (1 / 3)
 
 myShowWNameConf :: SWNConfig
 myShowWNameConf =
   def
-    { swn_font = "xft:Comfortaa:bold:size=20"
-    , swn_fade = 0.5
-    , swn_bgcolor = "#1e2030"
-    , swn_color = "#5b6078"
+    { swn_font = "xft:Poor Story:bold:size=30",
+      swn_fade = 0.5,
+      swn_bgcolor = "#373c3a", -- "#c4cbd4" -- "#453736" -- "#1e2030"
+      swn_color = "#bfbcaa" -- "#1b2b27" -- "#ada193" -- "#5b6078"
     }
-
 
 ------------------------------------------------------------------------
 -- My ScratchPads
 myScratchpads =
-  [ NS "spotify" "spotify" (getClassName "Spotify") defaultSize
-  , NS "telegram" "telegram-desktop" (getClassName "TelegramDesktop") defaultSize
-  , NS "discord" "discord" (getClassName "discord") defaultSize
-  , NS "zulip" "zulip" (getClassName "zulip") defaultSize
-  , NS "slack" "slack" (getClassName "Slack") defaultSize
+  [ NS "spotify" "spotify" (getClassName "Spotify") defaultSize,
+    NS "telegram" "telegram-desktop" (getClassName "TelegramDesktop") defaultSize,
+    NS "discord" "discord" (getClassName "discord") defaultSize,
+    NS "zulip" "zulip" (getClassName "zulip") defaultSize,
+    NS "slack" "slack" (getClassName "Slack") defaultSize
   ]
   where
     getClassName app = className =? app
-    defaultSize = customFloating $ W.RationalRect 0.05 0.05 0.90 0.90
+    defaultSize = customFloating $ W.RationalRect 0.30 0.20 0.37 0.65
 
 ------------------------------------------------------------------------
 -- Window rules:
@@ -351,7 +347,10 @@ myManageHook =
       className =? "Gimp" --> doFloat,
       resource =? "desktop_window" --> doIgnore,
       (className =? "firefox" <&&> resource =? "Dialog") --> doFloat,
-      title =? "Spotify" --> doFloat
+      title =? "Spotify" --> doFloat,
+      title =? "Jitsi Meet" --> doFloat,
+      (className =? "TelegramDesktop" <&&> title =? "Media viewer") --> doFloat,
+      className =? "Spacedrive" --> doFloat
     ]
     <+> namedScratchpadManageHook myScratchpads
 
