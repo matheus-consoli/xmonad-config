@@ -8,10 +8,10 @@ import XMonad.Hooks.EwmhDesktops
 import XMonad.Layout.Grid
 import XMonad.Layout.NoBorders
 import XMonad.Layout.ResizableTile
-import XMonad.Layout.Spacing
-import XMonad.Layout.ThreeColumns
-import XMonad.Layout.Spiral
 import XMonad.Layout.ShowWName
+import XMonad.Layout.Spacing
+import XMonad.Layout.Spiral
+import XMonad.Layout.ThreeColumns
 import qualified XMonad.StackSet as W
 import XMonad.Util.NamedScratchpad
 import XMonad.Util.Run
@@ -21,7 +21,7 @@ import XMonad.Util.SpawnOnce
 -- certain contrib modules.
 --
 myTerminal :: [Char]
-myTerminal = "alacritty"
+myTerminal = "kitty"
 
 -- Whether focus follows the mouse pointer.
 myFocusFollowsMouse :: Bool
@@ -34,7 +34,7 @@ myClickJustFocuses = False
 -- Width of the window border in pixels.
 --
 myBorderWidth :: Dimension
-myBorderWidth = 6
+myBorderWidth = 4
 
 -- modMask lets you specify which modkey you want to use. The default
 -- is mod1Mask ("left alt"). You may also consider using mod3Mask
@@ -121,9 +121,9 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) =
       ( (modm, xK_i),
         spawn "flameshot gui"
       ),
-      -- print the entire screen
+      -- record the screen
       ( (modm .|. shiftMask, xK_i),
-        spawn "flameshot full -p ~/Pictures"
+        spawn "deepin-screen-recorder"
       ),
       -- launch emacs
       ( (modm, xK_semicolon),
@@ -240,8 +240,8 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) =
       -- mod-shift-[1..9], Move client to workspace N
       --
       [ ((m .|. modm, k), windows $ f i)
-        | (i, k) <- zip (XMonad.workspaces conf) [xK_1 .. xK_9],
-          (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]
+      | (i, k) <- zip (XMonad.workspaces conf) [xK_1 .. xK_9],
+        (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]
       ]
 
 -- ++
@@ -286,7 +286,7 @@ myMouseBindings (XConfig {XMonad.modMask = modm}) =
 -- The available layouts. Note that each layout is separated by |||,
 -- which denotes layout choice.
 --
-myLayout = smartBorders $ smartSpacingWithEdge 3 $ (tiled ||| Mirror tiled ||| threeColumns ||| Grid ||| spiral (6 / 7) ||| noBorders Full)
+myLayout = smartBorders $ smartSpacingWithEdge 6 $ (tiled ||| Mirror tiled ||| threeColumns ||| Grid ||| spiral (6 / 7) ||| noBorders Full)
   where
     -- default tiling algorithm partitions the screen into two panes
     tiled = ResizableTall nmaster delta ratio []
@@ -307,7 +307,7 @@ myShowWNameConf :: SWNConfig
 myShowWNameConf =
   def
     { swn_font = "xft:Poor Story:bold:size=30",
-      swn_fade = 0.5,
+      swn_fade = 0.3,
       swn_bgcolor = "#373c3a", -- "#c4cbd4" -- "#453736" -- "#1e2030"
       swn_color = "#bfbcaa" -- "#1b2b27" -- "#ada193" -- "#5b6078"
     }
