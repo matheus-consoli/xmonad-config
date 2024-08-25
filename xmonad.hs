@@ -13,6 +13,7 @@ import XMonad.Layout.Spacing
 import XMonad.Layout.Spiral
 import XMonad.Layout.ThreeColumns
 import qualified XMonad.StackSet as W
+import XMonad.Util.EZConfig
 import XMonad.Util.NamedScratchpad
 import XMonad.Util.Run
 import XMonad.Util.SpawnOnce
@@ -87,162 +88,54 @@ toggleWindowInAllWorkspaces = do
 -- myStatusBar = "xmobar"
 -- myStatusBarPP = xmobarPP { ppCurrent = xmobarColor "#453a62" "" }
 
+myTerminalCmd = "emacsclient -c -eval '(progn (switch-to-buffer \"terminal\") (multi-term-next))'"
+
+summonNSP = namedScratchpadAction myScratchpads
+
 ------------------------------------------------------------------------
 -- Key bindings. Add, modify or remove key bindings here.
 --
 myKeys :: XConfig Layout -> M.Map (KeyMask, KeySym) (X ())
-myKeys conf@(XConfig {XMonad.modMask = modm}) =
-  M.fromList $
-    [ -- launch my emacs terminal
-      ( (modm .|. shiftMask, xK_Return),
-        spawn "emacsclient -c -eval '(progn (switch-to-buffer \"terminal\") (multi-term-next))'"
-      ),
-      -- launch a new terminal
-      ( (modm .|. mod1Mask, xK_Return),
-        spawn myTerminal
-      ),
-      -- launch dmenu
-      ( (modm, xK_p),
-        spawn "rofi -show run"
-      ),
-      -- launch window selector
-      ( (modm, xK_w),
-        spawn "rofi -show-icons -show window"
-      ),
-      -- launch window selector
-      ( (modm, xK_c),
-        spawn "rofi -show calc -modi calc -no-show-match -no-sort -no-persistent-history"
-      ),
-      -- close focused window
-      ( (modm .|. shiftMask, xK_c),
-        kill
-      ),
-      -- crop the screen
-      ( (modm, xK_i),
-        spawn "flameshot gui"
-      ),
-      -- record the screen
-      ( (modm .|. shiftMask, xK_i),
-        spawn "deepin-screen-recorder"
-      ),
-      -- launch emacs
-      ( (modm, xK_semicolon),
-        spawn "emacsclient -c"
-      ),
-      -- launch xcolor
-      ( (modm .|. controlMask, xK_i),
-        spawn "xcolor -s clipboard"
-      ),
-      -- launch scratchpad with telegram
-      ( (modm .|. shiftMask, xK_t),
-        namedScratchpadAction myScratchpads "telegram"
-      ),
-      -- launch scratchpad with spotify
-      ( (modm .|. shiftMask, xK_s),
-        namedScratchpadAction myScratchpads "spotify"
-      ),
-      -- launch scratchpad with discord
-      ( (modm .|. shiftMask, xK_d),
-        namedScratchpadAction myScratchpads "discord"
-      ),
-      -- launch scratchpad with zulip
-      ( (modm .|. shiftMask, xK_z),
-        namedScratchpadAction myScratchpads "zulip"
-      ),
-      -- launch scratchpad with slack
-      ( (modm .|. shiftMask, xK_f),
-        namedScratchpadAction myScratchpads "slack"
-      ),
-      -- Rotate through the available layout algorithms
-      ( (modm, xK_space),
-        sendMessage NextLayout
-      ),
-      -- Reset the layouts on the current workspace to default
-      ( (modm .|. shiftMask, xK_space),
-        setLayout $ XMonad.layoutHook conf
-      ),
-      -- copy the focused window to all workspaces (util to use with floating windows)
-      ( (modm, xK_s),
-        toggleWindowInAllWorkspaces
-      ),
-      -- Resize viewed windows to the correct size
-      ( (modm, xK_n),
-        refresh
-      ),
-      -- Move focus to the next window
-      ( (modm, xK_Tab),
-        windows W.focusDown
-      ),
-      -- Move focus to the next window
-      ( (modm, xK_j),
-        windows W.focusDown
-      ),
-      -- Move focus to the previous window
-      ( (modm, xK_k),
-        windows W.focusUp
-      ),
-      -- Move focus to the master window
-      ( (modm, xK_m),
-        windows W.focusMaster
-      ),
-      -- Swap the focused window and the master window
-      ( (modm, xK_Return),
-        windows W.swapMaster
-      ),
-      -- Swap the focused window with the next window
-      ( (modm .|. shiftMask, xK_j),
-        windows W.swapDown
-      ),
-      -- Swap the focused window with the previous window
-      ( (modm .|. shiftMask, xK_k),
-        windows W.swapUp
-      ),
-      -- Shrink the master area
-      ( (modm, xK_h),
-        sendMessage Shrink
-      ),
-      -- Expand the master area
-      ( (modm, xK_l),
-        sendMessage Expand
-      ),
-      -- Shrink the master area
-      ( (modm .|. shiftMask, xK_h),
-        sendMessage MirrorShrink
-      ),
-      -- Expand the master area vertically
-      ( (modm .|. shiftMask, xK_l),
-        sendMessage MirrorExpand
-      ),
-      -- Push window back into tiling
-      ( (modm, xK_t),
-        withFocused $ windows . W.sink
-      ),
-      -- Increment the number of windows in the master area
-      ( (modm, xK_comma),
-        sendMessage (IncMasterN 1)
-      ),
-      -- Deincrement the number of windows in the master area
-      ( (modm, xK_period),
-        sendMessage (IncMasterN (-1))
-      ),
-      -- Quit xmonad
-      ( (modm .|. shiftMask, xK_q),
-        io (exitWith ExitSuccess)
-      ),
-      -- Restart xmonad
-      ( (modm, xK_q),
-        spawn "xmonad --recompile;"
-      )
+myKeys c@(XConfig {XMonad.modMask = modm}) =
+  mkKeymap c $
+    [ ("M-S-<Return>", spawn myTerminalCmd),
+      ("M-M1-<Return>", spawn myTerminal),
+      ("M-p", spawn "rofi -show run"),
+      ("M-w", spawn "rofi -show-icons -show window"),
+      ("M-c", spawn "rofi -show calc -modi calc -no-show-match -no-sort -no-persistent-history"),
+      ("M-S-c", kill),
+      ("M-i", spawn "flameshot gui"),
+      ("M-S-i", spawn "deepin-screen-recorder"),
+      ("M-C-i", spawn "xcolor -s clipboard"),
+      ("M-;", spawn "emacsclient -c"),
+      ("M-S-t", summonNSP "telegram"),
+      ("M-S-s", summonNSP "spotify"),
+      ("M-S-s", summonNSP "spotify"),
+      ("M-S-f", summonNSP "slack"),
+      ("M-S-d", summonNSP "discord"),
+      ("M-<Space>", sendMessage NextLayout),
+      ("M-S-<Space>", setLayout $ XMonad.layoutHook c),
+      ("M-s", toggleWindowInAllWorkspaces),
+      ("M-n", refresh),
+      ("M-j", windows W.focusDown),
+      ("M-k", windows W.focusUp),
+      ("M-m", windows W.focusMaster),
+      ("M-<Return>", windows W.swapMaster),
+      ("M-S-j", windows W.swapDown),
+      ("M-S-k", windows W.swapUp),
+      ("M-h", sendMessage Shrink),
+      ("M-l", sendMessage Expand),
+      ("M-S-h", sendMessage MirrorShrink),
+      ("M-S-l", sendMessage MirrorExpand),
+      ("M-t", withFocused $ windows . W.sink),
+      ("M-,", sendMessage (IncMasterN (-1))),
+      ("M-.", sendMessage (IncMasterN 1)),
+      ("M-q", spawn "xmonad --recompile;")
     ]
-      ++
-      --
-      -- mod-[1..9], Switch to workspace N
-      -- mod-shift-[1..9], Move client to workspace N
-      --
-      [ ((m .|. modm, k), windows $ f i)
-      | (i, k) <- zip (XMonad.workspaces conf) [xK_1 .. xK_9],
-        (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]
-      ]
+      ++ [ (mod ++ show k, windows $ f i)
+         | (i, k) <- zip (XMonad.workspaces c) [1 .. 9],
+           (mod, f) <- [("M-", W.greedyView), ("M-S-", W.shift)]
+         ]
 
 -- ++
 --
