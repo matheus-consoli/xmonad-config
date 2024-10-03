@@ -1,11 +1,16 @@
 import qualified Data.Map as M
 import Data.Monoid
+import Data.Maybe
 import System.Exit
 import XMonad
 import XMonad.Actions.CopyWindow
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.EwmhDesktops
+import XMonad.Hooks.ManageDocks
+import XMonad.Hooks.RefocusLast
+import XMonad.Layout.FocusTracking
 import XMonad.Layout.Grid
+import XMonad.Layout.Magnifier
 import XMonad.Layout.NoBorders
 import XMonad.Layout.ResizableTile
 import XMonad.Layout.ShowWName
@@ -35,7 +40,7 @@ myClickJustFocuses = False
 -- Width of the window border in pixels.
 --
 myBorderWidth :: Dimension
-myBorderWidth = 4
+myBorderWidth = 2
 
 -- modMask lets you specify which modkey you want to use. The default
 -- is mod1Mask ("left alt"). You may also consider using mod3Mask
@@ -92,6 +97,24 @@ myTerminalCmd = "emacsclient -c -eval '(progn (switch-to-buffer \"terminal\") (m
 
 summonNSP = namedScratchpadAction myScratchpads
 
+-- https://gist.github.com/gilbertw1/603c3af68a21a10f1833
+skipFloating :: (Eq a, Ord a) => W.StackSet i l a s sd -> (W.StackSet i l a s sd -> W.StackSet i l a s sd) -> W.StackSet i l a s sd
+skipFloating stacks f
+  | isNothing curr = stacks -- short circuit if there is no currently focused window
+  | otherwise = skipFloatingR stacks curr f
+  where
+    curr = W.peek stacks
+
+skipFloatingR :: (Eq a, Ord a) => W.StackSet i l a s sd -> (Maybe a) -> (W.StackSet i l a s sd -> W.StackSet i l a s sd) -> W.StackSet i l a s sd
+skipFloatingR stacks startWindow f
+  | isNothing nextWindow = stacks -- next window is nothing return current stack set
+  | nextWindow == startWindow = newStacks -- if next window is the starting window then return the new stack set
+  | M.notMember (fromJust nextWindow) (W.floating stacks) = newStacks -- if next window is not a floating window return the new stack set
+  | otherwise = skipFloatingR newStacks startWindow f -- the next window is a floating window so keep recursing (looking)
+  where
+    newStacks = f stacks
+    nextWindow = W.peek newStacks
+
 ------------------------------------------------------------------------
 -- Key bindings. Add, modify or remove key bindings here.
 --
@@ -110,15 +133,14 @@ myKeys c@(XConfig {XMonad.modMask = modm}) =
       ("M-;", spawn "emacsclient -c"),
       ("M-S-t", summonNSP "telegram"),
       ("M-S-s", summonNSP "spotify"),
-      ("M-S-s", summonNSP "spotify"),
       ("M-S-f", summonNSP "slack"),
       ("M-S-d", summonNSP "discord"),
       ("M-<Space>", sendMessage NextLayout),
       ("M-S-<Space>", setLayout $ XMonad.layoutHook c),
       ("M-s", toggleWindowInAllWorkspaces),
       ("M-n", refresh),
-      ("M-j", windows W.focusDown),
-      ("M-k", windows W.focusUp),
+      ("M-j", windows (\s -> skipFloating s W.focusDown)),
+      ("M-k", windows (\s -> skipFloating s W.focusUp)),
       ("M-m", windows W.focusMaster),
       ("M-<Return>", windows W.swapMaster),
       ("M-S-j", windows W.swapDown),
@@ -130,7 +152,10 @@ myKeys c@(XConfig {XMonad.modMask = modm}) =
       ("M-t", withFocused $ windows . W.sink),
       ("M-,", sendMessage (IncMasterN (-1))),
       ("M-.", sendMessage (IncMasterN 1)),
-      ("M-q", spawn "xmonad --recompile;")
+      ("M-q", spawn "xmonad --recompile;"),
+      ("M-z", spawn "boomer"),
+      ("M-S-<Up>", sendMessage MagnifyMore),
+      ("M-S-<Down>", sendMessage MagnifyLess)
     ]
       ++ [ (mod ++ show k, windows $ f i)
          | (i, k) <- zip (XMonad.workspaces c) [1 .. 9],
@@ -179,7 +204,12 @@ myMouseBindings (XConfig {XMonad.modMask = modm}) =
 -- The available layouts. Note that each layout is separated by |||,
 -- which denotes layout choice.
 --
-myLayout = smartBorders $ smartSpacingWithEdge 6 $ (tiled ||| Mirror tiled ||| threeColumns ||| Grid ||| spiral (6 / 7) ||| noBorders Full)
+myLayout =
+  avoidStruts $
+    refocusLastLayoutHook . focusTracking $
+      smartBorders $
+        smartSpacingWithEdge 6 $
+          (tiled ||| Mirror tiled ||| threeColumns ||| Grid ||| spiral (6 / 7) ||| noBorders Full) ||| magnifier (Tall 1 (3 / 100) (1 / 2))
   where
     -- default tiling algorithm partitions the screen into two panes
     tiled = ResizableTall nmaster delta ratio []
@@ -199,10 +229,10 @@ myLayout = smartBorders $ smartSpacingWithEdge 6 $ (tiled ||| Mirror tiled ||| t
 myShowWNameConf :: SWNConfig
 myShowWNameConf =
   def
-    { swn_font = "xft:Poor Story:bold:size=30",
+    { swn_font = "xft:Alte Haas Grotesk:bold:size=26",
       swn_fade = 0.3,
-      swn_bgcolor = "#373c3a", -- "#c4cbd4" -- "#453736" -- "#1e2030"
-      swn_color = "#bfbcaa" -- "#1b2b27" -- "#ada193" -- "#5b6078"
+      swn_bgcolor = "#1b2b27", -- "#484e4a", -- "#373c3a", -- "#c4cbd4" -- "#453736" -- "#1e2030"
+      swn_color = "#cfc4b1" -- "#bfbcaa" -- "#1b2b27" -- "#ada193" -- "#5b6078"
     }
 
 ------------------------------------------------------------------------
@@ -239,13 +269,18 @@ myManageHook =
     [ className =? "MPlayer" --> doFloat,
       className =? "Gimp" --> doFloat,
       resource =? "desktop_window" --> doIgnore,
+      role =? "PictureInPicture" --> doIgnore,
       (className =? "firefox" <&&> resource =? "Dialog") --> doFloat,
+      (className =? "zen-alpha" <&&> resource =? "Dialog") --> doFloat,
+      (className =? "zen-alpha" <&&> role =? "PictureInPicture") --> doFloat,
       title =? "Spotify" --> doFloat,
       title =? "Jitsi Meet" --> doFloat,
       (className =? "TelegramDesktop" <&&> title =? "Media viewer") --> doFloat,
-      className =? "Spacedrive" --> doFloat
+      className =? "sd-desktop" --> doFloat
     ]
     <+> namedScratchpadManageHook myScratchpads
+  where
+    role = stringProperty "WM_WINDOW_ROLE"
 
 ------------------------------------------------------------------------
 -- Event handling
@@ -257,7 +292,15 @@ myManageHook =
 -- return (All True) if the default handler is to be run afterwards. To
 -- combine event hooks use mappend or mconcat from Data.Monoid.
 --
-myEventHook = handleEventHook def -- <+> ewmhFullscreen
+-- myEventHook = handleEventHook def -- <+> ewmhFullscreen
+
+myEventHook =
+  mconcat
+    [ refocusLastWhen (refocusingIsActive <||> isFloat)
+    ]
+
+-- TODO: whichkey
+-- source: https://github.com/disconsis/literate-xmonad-config/blob/master/src/config.org
 
 ------------------------------------------------------------------------
 -- Now run xmonad with all the defaults we set up.
